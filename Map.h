@@ -23,7 +23,7 @@ public:
 |     3    |     2    |
 |          |          |
 |    -------   -------|
-|          5	      |
+|          4	      |
 |--------   -------   |
 |     0	    |	1     |		
 |	    |         |
@@ -75,10 +75,8 @@ public:
        while(scan.lookRight()<=20){
 	moto.forwards();
       }
-      moto.stop();
-      //IR-logic here while(distance<something), maybe alignment too
-      moto.right(2500);
-      moto.forwards(4000);
+       moto.forwards(4000);
+    
     }
     if(scan.nearestAnomaly() == 2) { //door in S-E
    moto.right(5000);
@@ -90,10 +88,9 @@ public:
       while(scan.lookRight()<=20){
 	moto.forwards();
       }
-      moto.stop();
-      //IR-logic here while(distance<something), maybe alignment too
-      moto.right(2500);
       moto.forwards(4000);
+      //IR-logic here while(distance<something), maybe alignment too
+     
     }
     if(scan.nearestAnomaly() == 3) { //door in S-W
    moto.right(5000);
