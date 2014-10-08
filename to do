@@ -1,0 +1,27 @@
+To Do: 				08/10/2014 13:32
+
+in Scan class: 
+-IR-logic in methods: scan180, scan360, align, nearestAnomaly, lookleft,lookright, numAnomalies
+-Image recognition in method: room
+
+
+main method will go something like:
+
+map.setBase(int baseNumber);
+
+scan.scan360();
+if(scan.numAnomalies>1) { //i.e. we have started in the middle but we want to start in a room
+map.moveThroughDoor();}
+
+scan.scan360(); 
+if(scan.numAnomalies>1) {
+printf("something is wrong with our anomaly detection method \n");
+return;}
+
+map.setStartingRoom(scan.room());
+map.goHome();
+
+return;
+
+
+preferably we'll have some obstacle avoidance listener or something that can kick in but only last minute (and it will probably mess with the hard-coded path)
