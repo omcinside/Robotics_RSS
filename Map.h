@@ -17,6 +17,19 @@ public:
   Sonar sonar;
   Servo servo;
 
+  /*
+
+|---------------------|
+|     3    |     2    |
+|          |          |
+|    -------   -------|
+|          5	      |
+|--------   -------   |
+|     0	    |	1     |		
+|	    |         |
+|---------------------|
+  */
+
   Map(Scan &sc, Moto &mot, Sonar &son, Servo &serv) {
     baseSeen=false;
     baseRoomNumber=0;
@@ -31,10 +44,6 @@ public:
 
   void setBase(int baseloc) {
     baseRoomNumber=baseloc;
-  }
-
-  void setCurrentRoom(int currRoom) {
-    currentRoom=currRoom;
   }
 
   void setStartingRoom(int startRoom) {
@@ -98,19 +107,19 @@ public:
       wait(1000);
       //IR-logic here while something moto.forwards();
     } 
-if(scan.nearestAnomaly() == 5) { // door hard south, alignment should have put robot far away enough from wall
-  moto.right(5000);
-  serv.lookright();
+    if(scan.nearestAnomaly() == 5) { // door hard south, alignment should have put robot far away enough from wall
+      moto.right(5000);
+      serv.lookright();
       wait(1000);
       //IR-logic here while something moto.forwards();
     } 
-if(scan.nearestAnomaly() == 6) { // door hard east, alignment should have put robot far away enough from wall
-  moto.right(2500);  
-  serv.lookright();
+    if(scan.nearestAnomaly() == 6) { // door hard east, alignment should have put robot far away enough from wall
+      moto.right(2500);  
+      serv.lookright();
       wait(1000);
       //IR-logic here while something moto.forwards();
     } 
-if(scan.nearestAnomaly() == 7) { // door hard west, alignment should have put robot far away enough from wall
+    if(scan.nearestAnomaly() == 7) { // door hard west, alignment should have put robot far away enough from wall
       serv.lookleft();
       wait(1000);
       //IR-logic here while something moto.forwards();
@@ -122,274 +131,277 @@ if(scan.nearestAnomaly() == 7) { // door hard west, alignment should have put ro
     if (startingRoom == 0){
 	printf("Robot is in room 0 \n");
 	currentRoom = 0;
-
-	Robot.moveThroughDoor(0);
+	moveThroughDoor();
 	if (baseRoomNumber == 1) {
-		Robot.turnRight(90);
-		Robot.forwards(6);
-		Robot.align("R");
-		while (Scan.lookRight() <= 20 && Scan.sonar() >= 30) {
-			Robot.forwards();
+		moto.right(2500);
+		moto.forwards(6000);
+		scan.align(0);//align with the right wall
+		while (scan.lookRight() <= 20 || sonar.state() == 0) { //might need calibration
+			moto.forwards();
 		}
-			Robot.stop();
-			Robot.turnRight(90);
-			Robot.forwards(4);
-			Robot.align("L");
+			moto.stop();
+			moto.right(2500);
+			moto.forwards(4000);
+			scan.align(1);//align with left wall
 			currentRoom = 1;
-			Scan.scan360();
-			Map.updateDoors(1, Scan.nearestAnomalyX(), Scan.nearestAnomalyY());
-			if (Scan.seeBase() == true && currentRoom == baseRoomNumber) {
-				Robot.goHome();
+			scan.scan360();
+		     
+			if (scan.baseSeen() == true && currentRoom == baseRoomNumber) {
+			  moto.right(1250);
+			  moto.forwards(8000);
 				return;
 			}
 		
 	}
 
 	if (baseRoomNumber == 2) {
-		Robot.turnRight(90);
-		while (Scan.lookLeft() <= 20) {
-			Robot.forwards();
+	  moto.right(2500);
+		while (scan.lookLeft() <= 20) {
+			moto.forwards();
 		}
-		Robot.stop();
-		Robot.turnLeft(90);
-		Robot.forwards(4);
-		Robot.align("L");
+		moto.stop();
+		moto.left(2500);
+		moto.forwards(4000);
+		scan.align(1); //align with left wall
 		currentRoom = 2;
-		Scan.scan360();
-		Map.updateDoors(2, Scan.nearestAnomalyX(), Scan.nearestAnomalyY());
-		if (Scan.seeBase() == true && currentRoom == baseRoomNumber) {
-			Robot.goHome();
+		scan.scan360();
+       		if (scan.baseSeen() == true && currentRoom == baseRoomNumber) {
+		  moto.right(1250);
+		  moto.forwards(8000);
 			return;
 		}
 	}
 
 	if (baseRoomNumber == 3) {
-		Robot.turnLeft(90);
-		Robot.align("R");
-		while (Scan.lookRight() <= 20 && Scan.sonar() >= 30){
-			Robot.forwards();
+	  moto.left(2500);
+		scan.align(0);
+		while (scan.lookRight() <= 20 || sonar.state()==0){
+			moto.forwards();
 		}
-		Robot.stop();
-		Robot.turnRight(90);
-		Robot.forwards(4);
-		Robot.align("L");
+		moto.stop();
+		moto.right(2500);
+		moto.forwards(4000);
+		moto.align(1);
 		currentRoom = 3;
-		Scan.scan360();
-		Map.updateDoors(3, Scan.nearestAnomalyX(), Scan.nearestAnomalyY());
-		if (Scan.seeBase() == true && currentRoom == baseRoomNumber) {
-			Robot.goHome();
-			return;
+		scan.scan360();
+		if (scan.baseSeen() == true && currentRoom == baseRoomNumber) {	    	
+		  moto.right(1250);
+		  moto.forwards(8000);
+		  return;
 		}
 	}
 
 }
 
-if (scan.room() == 1) {
+if (startingRoom == 1) {
 	printf("Robot is in room 1 \n");
 	currentRoom = 1;
-	Map.updateDoors(1, Scan.nearestAnomalyX(), Scan.nearestAnomalyY());
-	Robot.moveThroughDoor(1);
+	moveThroughDoor();
 	if (baseRoomNumber == 0) {
-		Robot.turnLeft(90);
-		Robot.align("R");
-		Robot.forwards(6);
-		While(Scan.lookLeft() <= 20) {
-			Robot.forwards();
-		}
-		Robot.stop();
-		Robot.turnLeft(90);
-		Robot.forwards(4);
-		Robot.align("L");
+	  moto.left(2500);
+	  scan.align(0); //align with right wall
+	  moto.forwards(6000);
+	  While(scan.lookLeft() <= 20) {
+	    moto.forwards();
+	  }
+		moto.stop();
+		moto.left(2500);
+		moto.forwards(4000);
+		scan.align(1); //align with left wall
 		currentRoom = 0;
-		Scan.scan360();
-		Map.updateDoors(0, Scan.nearestAnomalyX(), Scan.nearestAnomalyY());
-		if (Scan.seeBase() == true && currentRoom == baseRoomNumber) {
-			Robot.goHome();
-			return;
+		scan.scan360();
+		if (scan.baseSeen() == true && currentRoom == baseRoomNumber) {
+		  moto.right(1250);
+		  moto.forwards(8000);
+		  return;
 		}
 	}
 
 	if (baseRoomNumber == 2) {
-		Robot.turnLeft(90);
-		Robot.align("R");
-		While(Scan.lookRight() <= 20) {
-			Robot.forwards();
+	  moto.left(2500);
+		scan.align(0);
+		While(scan.lookRight() <= 20) {
+			moto.forwards();
 		}
-		Robot.stop();
-		Robot.turnRight(90);
-		Robot.forwards(4);
-		Robot.align("L");
+		moto.stop();
+		moto.right(2500);
+		moto.forwards(4000);
+		scan.align(1);
 		currentRoom = 2;
-		Scan.scan360();
-		Map.updateDoors(2, Scan.nearestAnomalyX(), Scan.nearestAnomalyY());
-		if (Scan.seeBase() == true && currentRoom == baseRoomNumber) {
-			Robot.goHome();
-			return;
+		scan.scan360();
+		if (scan.baseSeen() == true && currentRoom == baseRoomNumber) {
+		  moto.right(1250);
+		  moto.forwards(8000);
+		  return;
 		}
 	}
 
 	if (baseRoomNumber == 3) {
-		Robot.turnLeft(90);
-		Robot.align("R");
-		Robot.forwards(6);
-		While(Scan.lookLeft() <= 20) {
-			Robot.forwards();
+	  moto.left(2500);
+	  scan.align(0);
+	  moto.forwards(6000);
+		While(scan.lookLeft() <= 20) {
+			moto.forwards();
 		}
-		Robot.stop();
-		Robot.align("R");
-		while(Scan.lookRight <= 20 && Scan.sonar >= 30){
-			Robot.forwards();
+		moto.stop();
+		scan.align(0);
+		while(scan.lookRight() <= 20 || sonar.state()==0){
+			moto.forwards();
 		}
-		Robot.stop();
-		Robot.turnRight(90);
-		Robot.forwards(4);
-		Robot.align("L");
+		moto.stop();
+		moto.right(2500);
+		moto.forwards(4000);
+		scan.align(1);
 		currentRoom = 3;
-		Scan.scan360();
-		Map.updateDoors(3, Scan.nearestAnomalyX(), Scan.nearestAnomalyY());
-		if (Scan.seeBase() == true && currentRoom == baseRoomNumber) {
-			Robot.goHome();
-			return;
+		scan.scan360();
+		
+		if (scan.baseSeen() == true && currentRoom == baseRoomNumber) {
+		  moto.right(1250);
+		  moto.forwards(8000);	
+		  return;
 		}
 	}
 }
 
 
-if (scan.room() == 2) {
+if (startingRoom == 2) {
 	printf("Robot is in room 2 \n");
 	currentRoom = 2;
-	Map.updateDoors(2, Scan.nearestAnomalyX(), Scan.nearestAnomalyY());
-	Robot.moveThroughDoor(2);
+	moveThroughDoor();
 	if (baseRoomNumber == 3) {
-		Robot.turnRight(90);
-		Robot.forwards(6);
-		Robot.align("R");
-		while (Scan.lookRight() <= 20 && Scan.sonar() >= 30) {
-			Robot.forwards();
+	  moto.right(2500);
+		moto.forwards(6000);
+		scan.align(0);
+		while (scan.lookRight() <= 20 || sonar.state() == 0) {
+			moto.forwards();
 		}
-		Robot.stop();
-		Robot.turnRight(90);
-		Robot.forwards(4);
-		Robot.align("L");
+		moto.stop();
+		moto.right(2500);
+		moto.forwards(4000);
+		scan.align(1);
 		currentRoom = 3;
-		Scan.scan360();
-		Map.updateDoors(3, Scan.nearestAnomalyX(), Scan.nearestAnomalyY());
-		if (Scan.seeBase() == true && currentRoom == baseRoomNumber) {
-			Robot.goHome();
-			return;
+		scan.scan360();
+		
+		if (scan.baseSeen() == true && currentRoom == baseRoomNumber) {
+		  moto.right(1250);
+		  moto.forwards(8000);
+		  return;
 		}
 
 	}
 
 	if (baseRoomNumber == 0) {
-		Robot.turnRight(90);
-		while (Scan.lookLeft() <= 20) {
-			Robot.forwards();
+		moto.right(2500);
+		while (scan.lookLeft() <= 20) {
+			moto.forwards();
 		}
-		Robot.stop();
-		Robot.turnLeft(90);
-		Robot.forwards(4);
-		Robot.align("L");
+		moto.stop();
+		moto.left(2500);
+		moto.forwards(4000);
+		scan.align(1);
 		currentRoom = 0;
-		Scan.scan360();
-		Map.updateDoors(0, Scan.nearestAnomalyX(), Scan.nearestAnomalyY());
-		if (Scan.seeBase() == true && currentRoom == baseRoomNumber) {
-			Robot.goHome();
-			return;
+		scan.scan360();
+		
+		if (scan.baseSeen() == true && currentRoom == baseRoomNumber) {
+		  moto.right(1250);
+		  moto.forwards(8000);
+		  return;
 		}
 	}
 
 	if (baseRoomNumber == 1) {
-		Robot.turnLeft(90);
-		Robot.align("R");
-		while (Scan.lookRight() <= 20 && Scan.sonar() >= 30){
-			Robot.forwards();
+		moto.left(2500);
+		scan.align(0);
+		while (scan.lookRight() <= 20 || sonar.state() == 0){
+			moto.forwards();
 		}
-		Robot.stop();
-		Robot.turnRight(90);
-		Robot.forwards(4);
-		Robot.align("L");
+		moto.stop();
+		moto.right(2500);
+		moto.forwards(4000);
+		scan.align(1);
 		currentRoom = 1;
-		Scan.scan360();
-		Map.updateDoors(1, Scan.nearestAnomalyX(), Scan.nearestAnomalyY());
-		if (Scan.seeBase() == true && currentRoom == baseRoomNumber) {
-			Robot.goHome();
-			return;
+		scan.scan360();
+		
+		if (scan.baseSeen() == true && currentRoom == baseRoomNumber) {
+		  moto.right(1250);
+		  moto.forwards(8000);
+		  return;
 		}
 	}
 
 }
 
-if (scan.room() == 3) {
+if (startingRoom == 3) {
 	printf("Robot is in room 3 \n");
 	currentRoom = 3;
-	Map.updateDoors(3, Scan.nearestAnomalyX(), Scan.nearestAnomalyY());
-	Robot.moveThroughDoor(3);
+	moveThroughDoor();
 	if (baseRoomNumber == 2) {
-		Robot.turnLeft(90);
-		Robot.align("R");
-		Robot.forwards(6);
-		While(Scan.lookLeft() <= 20) {
-			Robot.forwards();
+		moto.left(2500);
+		scan.align(0);
+		moto.forwards(6000);
+		While(scan.lookLeft() <= 20) {
+			moto.forwards();
 		}
-		Robot.stop();
-		Robot.turnLeft(90);
-		Robot.forwards(4);
-		Robot.align("L");
+		moto.stop();
+		moto.left(2500);
+		moto.forwards(4000);
+		scan.align(1);
 		currentRoom = 2;
-		Scan.scan360();
-		Map.updateDoors(2, Scan.nearestAnomalyX(), Scan.nearestAnomalyY());
-		if (Scan.seeBase() == true && currentRoom == baseRoomNumber) {
-			Robot.goHome();
-			return;
+		scan.scan360();
+		if (scan.baseSeen() == true && currentRoom == baseRoomNumber) {
+		  moto.right(1250);
+		  moto.forwards(8000);
+		  return;
 		}
 	}
 
 	if (baseRoomNumber == 0) {
-		Robot.turnLeft(90);
-		Robot.align("R");
-		While(Scan.lookRight() <= 20) {
-			Robot.forwards();
+		moto.left(2500);
+		scan.align(0);
+		While(scan.lookRight() <= 20) {
+			moto.forwards();
 		}
-		Robot.stop();
-		Robot.turnRight(90);
-		Robot.forwards(4);
-		Robot.align("L");
+		moto.stop();
+		moto.right(2500);
+		moto.forwards(4000);
+		scan.align(1);
 		currentRoom = 0;
-		Scan.scan360();
-		Map.updateDoors(0, Scan.nearestAnomalyX(), Scan.nearestAnomalyY());
-		if (Scan.seeBase() == true && currentRoom == baseRoomNumber) {
-			Robot.goHome();
-			return;
+		scan.scan360();
+		
+		if (scan.baseSeen() == true && currentRoom == baseRoomNumber) {
+		  moto.right(1250);
+		  moto.forwards(8000);
+		  return;
 		}
 	}
 
 	if (baseRoomNumber == 1) {
-		Robot.turnLeft(90);
-		Robot.align("R");
-		Robot.forwards(6);
-		While(Scan.lookLeft() <= 20) {
-			Robot.forwards();
+		moto.left(2500);
+		scan.align(0);
+		moto.forwards(6000);
+		While(scan.lookLeft() <= 20) {
+			moto.forwards();
 		}
-		Robot.stop();
-		Robot.align("R");
-		while (Scan.lookRight <= 20 && Scan.sonar >= 30){
-			Robot.forwards();
+		moto.stop();
+		scan.align(0);
+		while (scan.lookRight <= 20 || sonar.state() == 0){
+			moto.forwards();
 		}
-		Robot.stop();
-		Robot.turnRight(90);
-		Robot.forwards(4);
-		Robot.align("L");
+		moto.stop();
+		moto.right(2500);
+		moto.forwards(4000);
+		scan.align(1);
 		currentRoom = 1;
-		Scan.scan360();
-		Map.updateDoors(1, Scan.nearestAnomalyX(), Scan.nearestAnomalyY());
-		if (Scan.seeBase() == true && currentRoom == baseRoomNumber) {
-			Robot.goHome();
-			return;
+		scan.scan360();
+		
+		if (scan.seeBase() == true && currentRoom == baseRoomNumber) {
+		  moto.right(1250);
+		  moto.forwards(8000);
+		  return;
 		}
 	}
 
-}
+ }
   }
 
 };
