@@ -185,22 +185,18 @@ int interfacekit_simple()
 	    if(power_button_get_value() >= 2){
 	      power_button_reset();
 	    }
-	    if(he == 1 && motor.moveState() == 1){
+	    if(he == 1){
 	      count +=1;
-	    }
-	    if(he == 0){
-	      count = 0;
 	    }
 	    if(power_button_get_value() < 1){
 	      motor.stop();
-	      count = 0;
 	    }else if (sn == 1) {
 	      motor.right();
 	    }else if(lw == 1) {
 	      motor.right();
 	    }else if(rw == 1) {
 	      motor.left();
-	    }else if(he == 1 && motor.moveState() == 1 && count>5) {
+	    }else if(he == 1 && motor.moveState() == 1 && count>50) {
 	       motor.reverse();
 	       sleep(5);
 	       motor.right();

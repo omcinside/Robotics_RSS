@@ -1,44 +1,127 @@
-#include <stdio>
+#include <stdio.h>
 #include "Scan.h"
+#include "Moto.h"
+#include "Servo.h"
+#include "Sonar.h"
 
+class Map {
 
+public:
 
+  bool baseSeen;
+  int baseRoomNumber;
+  int startingRoom;
+  int currentRoom;
+  Scan scan;
+  Moto moto;
+  Sonar sonar;
+  Servo servo;
 
+  Map(Scan &sc, Moto &mot, Sonar &son, Servo &serv) {
+    baseSeen=false;
+    baseRoomNumber=0;
+    currentRoom=0;
+    startingRoom=0;
+    scan =sc;
+    moto=mot;
+    sonar=son;
+    servo=&serv;
 
-//robot is placed in starting position at (0,0) COULD MAKE SENSE TO ALIGN WITH WALL FIRST SO THAT AXES OF FRAME OF REFERENCE ARE NICE WRT ARENA
-//do a 360 degree scan
-Scan.scan360();
+  }
 
-Map.setBase(baseRoomNumber);
+  void setBase(int baseloc) {
+    baseRoomNumber=baseloc;
+  }
 
-//First: check if we are already next to the base
-if (Scan.seeBase()== true) {
-	
-	Robot.goHome(); //uses the base location on the map to go home
-	Map.updatePosition(Robot.deltax(),Robot.deltaY()); //update the position of the robot on the map using its current orientation and the distance it's moved
-	return;
-}
+  void setCurrentRoom(int currRoom) {
+    currentRoom=currRoom;
+  }
 
+  void setStartingRoom(int startRoom) {
+    startingRoom=startRoom;
+  }
 
-//otherwise we are in some room in the base, but we do not know which:
-/*
-|---------------------|
-|     3    |     2    |
-|          |          |
-|   -------    -------|
-|			5		  |
-|--------   -------   |
-|	 0		|	1	  |		
-|			|         |
-|---------------------|
+  //moves through a door after scan has told it which quadrant the door is in
+  void moveThroughDoor() {
+    if(scan.nearestAnomaly() == 0) { //door in N-E
+      while(sonar.state==0) {
+	moto.forwards();
+    }
+      moto.stop();
+      moto.right(2500);
+      serv.lookleft();
+      wait(1000);
+      //IR-logic here while(distance<something), maybe alignment too
+      moto.left(2500);
+      moto.forwards(4000);
+    }
+    if(scan.nearestAnomaly() == 1) { //door in N-W
+      while(sonar.state==0) {
+	moto.forwards();
+      }
+      moto.stop();
+      moto.left(2500);
+      serv.lookright();
+      wait(1000);
+      //IR-logic here while(distance<something), maybe alignment too
+      moto.right(2500);
+      moto.forwards(4000);
+    }
+    if(scan.nearestAnomaly() == 2) { //door in S-E
+   moto.right(5000);
+      while(sonar.state==0) {
+	moto.forwards();
+      }
+      moto.stop();
+      moto.left(2500);
+      serv.lookright();
+      wait(1000);
+      //IR-logic here while(distance<something), maybe alignment too
+      moto.right(2500);
+      moto.forwards(4000);
+    }
+    if(scan.nearestAnomaly() == 3) { //door in S-W
+   moto.right(5000);
+      while(sonar.state==0) {
+	moto.forwards();
+    }
+      moto.stop();
+      moto.right(2500);
+      serv.lookleft();
+      wait(1000);
+      //IR-logic here while(distance<something) -> moto.forwards() , maybe alignment too
+      moto.left(2500);
+      moto.forwards(4000);
+    }
+    if(scan.nearestAnomaly() == 4) { // door hard north, alignment should have put robot far away enough from wall
+      serv.lookright();
+      wait(1000);
+      //IR-logic here while something moto.forwards();
+    } 
+if(scan.nearestAnomaly() == 5) { // door hard south, alignment should have put robot far away enough from wall
+  moto.right(5000;
+  serv.lookright();
+      wait(1000);
+      //IR-logic here while something moto.forwards();
+    } 
+if(scan.nearestAnomaly() == 4) { // door hard north, alignment should have put robot far away enough from wall
+      serv.lookright();
+      wait(1000);
+      //IR-logic here while something moto.forwards();
+    } 
+if(scan.nearestAnomaly() == 4) { // door hard north, alignment should have put robot far away enough from wall
+      serv.lookright();
+      wait(1000);
+      //IR-logic here while something moto.forwards();
+    } 
 
-base is symmetric, doesn't matter which corner we're in, need to find out if we're in 0,1 or 5 -> once determined the opposite 0 and 1 become 2 and 3 */
+  }
 
-
-if (scan.room() == 0){
+  void goHome(){
+    if (startingRoom == 0){
 	printf("Robot is in room 0 \n");
 	currentRoom = 0;
-	Map.updateDoors(0, Scan.nearestAnomalyX(), Scan.nearestAnomalyY()); //door 0 signifies room 0
+
 	Robot.moveThroughDoor(0);
 	if (baseRoomNumber == 1) {
 		Robot.turnRight(90);
@@ -306,18 +389,6 @@ if (scan.room() == 3) {
 	}
 
 }
+  }
 
-//if the number of anomalies> 1 then we must have started in the middle bit, room 3
-if (Scan.numberofAnomalies() > 1) {
-	printf("multiple anomalies found, we are in room 3 \n");
-	Map.updateDoors(0); //uses the anomaly data to put anomalies on the map, gives it label 0
-	Robot.moveThroughDoor(0); //robot moves through door 0 by first aligning with a wall at right angles 
-	Map.updatePosition(Robot.deltax(), Robot.deltaY());
-	//-> now we are in room 1 or 2 again and we can follow the logic from before
-}
-
-if (Scan.numberofAnomalies() == 0) {
-	Robot.move(10); //if the robot can't find any anomalies for whatever reason move randomly for a while before checking again
-	Scan.scan360();
-	//-> repeat above logic
-}
+};

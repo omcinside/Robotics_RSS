@@ -1,0 +1,87 @@
+#include <stdio.h>
+
+class Map {
+
+private:
+
+	double robotX, robotY, baseX, baseY;
+	size_t vectorSize; //4 doors in total
+	std::vector<double> doorX(vectorSize),doorY(vectorSize);  //element 0 corresponds to door 0 etc.
+	std::vector<bool> doorSeen(vectorSize);
+	std::vector<int> roomDoorAssociation(vectorSize) //0th element corresponds to room 1, 1st to 2, 3rd to room 4, 4th to room 5  --> integer entries correspond to door number leading to said room
+	bool baseSeen;
+
+
+public:
+
+	Map() { //default constructor
+
+		//robot starts at (0,0)
+		robotX = 0; 
+		robotY = 0;
+
+		vectorSize = 4; // 4 doors in total;
+
+		baseSeen = false;
+
+		for (int i = 0; i < 4; i++) {
+			doorX[i] = 0;	//initialize the doors all at (0,0) (in other words they aren't known yet)
+			doorY[i] = 0;
+			doorSeen[i] = false;
+		}
+
+	}
+
+	double getBaseX() {
+		if (baseSeen == true) {
+			return baseX;
+		}
+		printf("Base has not yet been seen \n"); //need an error to be thrown here?
+		return 0;
+	}
+
+	double getBaseY() {
+		if (baseSeen == true) {
+			return baseY;
+		}
+		printf("Base has not yet been seen \n"); //need an error to be thrown here?
+		return 0;
+	}
+
+	void setBase(double x, double y) {
+		baseSeen = true;
+		baseX = x;
+		baseY = y;
+	}
+
+	void updateDoors(int label, double x, double y) {
+		doorX[label] = x;
+		doorY[label] = y;
+		doorSeen[label] = true;
+	}
+
+	double getDoorX(int label) {
+		if (doorSeen[label] == true) {
+			return doorX[label];
+		}
+		printf("Door %d has not yet been seen \n", label); //need an error to be thrown here?
+		return 0;
+	}
+
+	double getDoorY(int label) {
+		if (doorSeen[label] == true) {
+			return doorY[label];
+		}
+		printf("Door %d has not yet been seen \n", label); //need an error to be thrown here?
+		return 0;
+	}
+
+	void associateRoom(int roomNumber, int doorNumber) {
+		roomDoorAssociation(roomNumber) = doorNumber;
+	}
+
+	void updatePosition(double x, double y) {
+		robotX = robotX + x;
+		robotY = robotY + y;
+	}
+};

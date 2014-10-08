@@ -10,20 +10,6 @@
 
 #include <stdio.h>
 #include <phidget21.h>
-//#include <list>
-#include <pthread.h>
-#include <libpowerbutton.h>
-#include "Whisker.h"
-#include "HallE.h"
-#include "Moto.h"
-#include "Sonar.h"
-
-Sonar sonar;
-HallE hall;
-Moto motor;
-
-Whisker whleft;
-Whisker whright;
 
 int AttachHandler(CPhidgetHandle IFK, void *userptr)
 {
@@ -61,20 +47,7 @@ int ErrorHandler(CPhidgetHandle IFK, void *userptr, int ErrorCode, const char *u
 //Index - Index of the input that generated the event, State - boolean (0 or 1) representing the input state (on or off)
 int InputChangeHandler(CPhidgetInterfaceKitHandle IFK, void *usrptr, int Index, int State)
 {
-  if (Index == 4)
-    {
-      whleft.in(State);
-    }
-  else if(Index == 5)
-    {
-      whright.in(State);
-    }
-  else if(Index == 7)
-    {
-      hall.in(State);
-    }
-  //printf("Digital Input: %d > State: %d\n", Index, State);
-  //printf("Hall: %d \n",hall.state());
+	printf("Digital Input: %d > State: %d\n", Index, State);
 	return 0;
 }
 
@@ -90,11 +63,7 @@ int OutputChangeHandler(CPhidgetInterfaceKitHandle IFK, void *usrptr, int Index,
 //Index - Index of the sensor that generated the event, Value - the sensor read value
 int SensorChangeHandler(CPhidgetInterfaceKitHandle IFK, void *usrptr, int Index, int Value)
 {
-  if(Index == 1)
-    {
-      sonar.in(Value);
-      }
-  //printf("Sensor: %d > Value: %d\n", Index, Value);
+	printf("Sensor: %d > Value: %d\n", Index, Value);
 	return 0;
 }
 
@@ -172,55 +141,11 @@ int interfacekit_simple()
 		return 0;
 	}
 
-	int count = 0;
-	bool run = true;
-	power_button_reset();
-	while (run)
-	  {
-	    printf("Hello\n");
-	    int lw = whleft.state();
-	    int rw = whright.state();
-	    int he = hall.state();
-	    int sn = sonar.state();
-	    if(power_button_get_value() >= 2){
-	      power_button_reset();
-	    }
-	    if(he == 1 && motor.moveState() == 1){
-	      count +=1;
-	    }
-	    if(he == 0){
-	      count = 0;
-	    }
-	    if(power_button_get_value() < 1){
-	      motor.stop();
-	      count = 0;
-	    }else if (sn == 1) {
-	      motor.right();
-	    }else if(lw == 1) {
-	      motor.right();
-	    }else if(rw == 1) {
-	      motor.left();
-	    }else if(he == 1 && motor.moveState() == 1 && count>5) {
-	       motor.reverse();
-	       sleep(5);
-	       motor.right();
-	       sleep(3);
-	       count =0;
-	    }else{
-	      motor.forwards();
-	    }
-
-	    printf("Left Whisker: %d, Right Whisker: %d, Hall Effect: %d, Sonar: %d\n", lw, rw, he, sn);
-	    sleep(1);
-
-	    
-	  }
-
 	//Display the properties of the attached interface kit device
 	display_properties(ifKit);
 
 	//read interface kit event data
-	/*printf("Reading.....\n");
+	printf("Reading.....\n");
 
 	//keep displaying interface kit data until user input is read
 	printf("Press any key to go to next step\n");
@@ -249,7 +174,7 @@ int interfacekit_simple()
 	CPhidgetInterfaceKit_setRatiometric(ifKit, 0);
 
 	//read interface kit event data
-	printf("Reading.....\n");*/
+	printf("Reading.....\n");
 
 	//keep displaying interface kit data until user input is read
 	printf("Press any key to end\n");
@@ -266,8 +191,6 @@ int interfacekit_simple()
 
 int main(int argc, char* argv[])
 {
-  //Whisker left();
-  //Whisker right();
 	interfacekit_simple();
 	return 0;
 }

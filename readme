@@ -1,0 +1,8 @@
+C Examples for Phidget21 and OpenCV on Linux
+
+To build manually on Linux:
+gcc example.c -o example -lphidget21
+
+With OpenCV:
+g++ example.c -o example `pkg-config opencv --cflags --libs`
+

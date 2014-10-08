@@ -9,7 +9,6 @@
 // view a copy of this license, visit http://creativecommons.org/licenses/by/2.5/ca/
 
 #include <stdio.h>
-#include "wait.h"
 
 int MotoAttachHandler(CPhidgetHandle MC, void *userptr)
 {
@@ -144,34 +143,6 @@ class Moto {
     CPhidgetMotorControl_setAcceleration (motoControl, 1, 100.00);
     CPhidgetMotorControl_setVelocity (motoControl, 1, 100.00);
   }
-
-  void turnLeft(double val)
-  {
-    left();
-    wait(val);
-    printf("Hello");
-    stop();
-  }
-
- void turnRight(double val)
-  {
-    right();
-    wait(val);
-    printf("Hello");
-    stop();
-  }
-
- void reverse(double val) {
-   reverse();
-   wait(val);
-   stop();
- }
-
- void forwards(double val) {
-   forwards();
-   wait(val);
-   stop();
- }
 
   void right()
   {

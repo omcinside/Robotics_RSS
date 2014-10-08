@@ -1,0 +1,11 @@
+#include "Whisker.h"
+#include <stdio>
+
+int main()
+{
+  Whisker w();
+
+  w.in(1);
+
+  printf(w.state()+" ");
+}

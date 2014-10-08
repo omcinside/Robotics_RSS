@@ -1,0 +1,12 @@
+#ifndef WHISKER_H_INCLUDED
+#define WHISKER_H_INCLUDED
+#include <iostream>
+#include <stdio.h>
+#include <time.h>
+class Whisker
+{
+ public:
+  void in(int signal);
+  int state();
+};
+#endif

@@ -1,0 +1,6 @@
+#ifndef SONAR_H_INCLUDED
+#define SONAR_H_INCLUDED
+class Sonar
+void in(int v);
+int state();
+#endif

@@ -1,0 +1,25 @@
+class Sonar
+{
+
+ public:
+  int currentvalue;
+  list values;
+
+  void in(int v)
+  {
+    currentvalue = v;
+    values.emplace_back(v);
+  }
+
+  int state()
+  {
+    if(currentvalue<=20)
+      {
+	return 1
+	  }
+    else
+      {
+	return 0
+	  }
+
+}
