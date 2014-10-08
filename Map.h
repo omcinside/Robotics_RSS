@@ -53,81 +53,119 @@ public:
   //moves through a door after scan has told it which quadrant the door is in
   void moveThroughDoor() {
     if(scan.nearestAnomaly() == 0) { //door in N-E
-      while(sonar.state==0) {
+      while(sonar.state()==0) {
 	moto.forwards();
     }
       moto.stop();
       moto.right(2500);
-      serv.lookleft();
-      wait(1000);
+      while(scan.lookLeft()<=20){
+	moto.forwards();
+      }
+      moto.stop();
       //IR-logic here while(distance<something), maybe alignment too
       moto.left(2500);
       moto.forwards(4000);
     }
     if(scan.nearestAnomaly() == 1) { //door in N-W
-      while(sonar.state==0) {
+      while(sonar.state()==0) {
 	moto.forwards();
       }
       moto.stop();
       moto.left(2500);
-      serv.lookright();
-      wait(1000);
+       while(scan.lookRight()<=20){
+	moto.forwards();
+      }
+      moto.stop();
       //IR-logic here while(distance<something), maybe alignment too
       moto.right(2500);
       moto.forwards(4000);
     }
     if(scan.nearestAnomaly() == 2) { //door in S-E
    moto.right(5000);
-      while(sonar.state==0) {
+   while(sonar.state()==0) {
 	moto.forwards();
       }
       moto.stop();
       moto.left(2500);
-      serv.lookright();
-      wait(1000);
+      while(scan.lookRight()<=20){
+	moto.forwards();
+      }
+      moto.stop();
       //IR-logic here while(distance<something), maybe alignment too
       moto.right(2500);
       moto.forwards(4000);
     }
     if(scan.nearestAnomaly() == 3) { //door in S-W
    moto.right(5000);
-      while(sonar.state==0) {
+   while(sonar.state()==0) {
 	moto.forwards();
     }
       moto.stop();
       moto.right(2500);
-      serv.lookleft();
-      wait(1000);
+       while(scan.lookLeft()<=20){
+	moto.forwards();
+      }
+      moto.stop();
       //IR-logic here while(distance<something) -> moto.forwards() , maybe alignment too
       moto.left(2500);
       moto.forwards(4000);
     }
     if(scan.nearestAnomaly() == 4) { // door hard north, alignment should have put robot far away enough from wall
-      serv.lookright();
-      wait(1000);
-      //IR-logic here while something moto.forwards();
+      while(scan.lookRight()<=20) {
+	if(sonar.state()==0) { //need this because might be in room 1 or 3 where there is a right angle after the exit
+	  moto.forwards();
+	} else {
+	  break;}
+      }
+      moto.stop();
     } 
     if(scan.nearestAnomaly() == 5) { // door hard south, alignment should have put robot far away enough from wall
       moto.right(5000);
-      serv.lookright();
-      wait(1000);
+     while(scan.lookRight()<=20) {
+	if(sonar.state()==0) {
+	  moto.forwards();
+	} else {
+	  break;}
+      }
+      moto.stop();
       //IR-logic here while something moto.forwards();
     } 
     if(scan.nearestAnomaly() == 6) { // door hard east, alignment should have put robot far away enough from wall
       moto.right(2500);  
-      serv.lookright();
-      wait(1000);
+      while(scan.lookRight()<=20) {
+	if(sonar.state()==0) {
+	  moto.forwards();
+	} else {
+	  break;}
+      }
+      moto.stop();
       //IR-logic here while something moto.forwards();
     } 
     if(scan.nearestAnomaly() == 7) { // door hard west, alignment should have put robot far away enough from wall
-      serv.lookleft();
-      wait(1000);
+      moto.left(2500);
+      while(scan.lookRight()<=20) {
+	if(sonar.state()==0) {
+	  moto.forwards();
+	} else {
+	  break;}
+      }
+      moto.stop();
       //IR-logic here while something moto.forwards();
     } 
 
   }
 
   void goHome(){
+    if(startingRoom == baseRoomNumber){
+      moveThroughDoor();
+      moto.right(5000);
+      moto.forwards(6000);
+      scan.Scan360();
+      moto.right(1250);
+      moto.forwards(8000);
+      return;
+    }
+
     if (startingRoom == 0){
 	printf("Robot is in room 0 \n");
 	currentRoom = 0;
