@@ -73,15 +73,19 @@ class Scan {
   }
 
   int lookLeft() {
+  if(servo.getPosition()>1) {
     servo.lookleft();
     wait(500);
+   } 
     //return IR-distance
   }
 
   int lookRight() {
+  if(servo.getPosition<184) {
     while(servo.getPosition<185) {
       servo.lookright();
       wait(50);
+    }
     }
     //return IR-distance
 
