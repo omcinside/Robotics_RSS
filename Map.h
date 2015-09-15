@@ -3,6 +3,7 @@
 #include "Moto.h"
 #include "Servo.h"
 #include "Sonar.h"
+#include "IR.h"
 
 class Map {
 
@@ -16,9 +17,9 @@ public:
   Moto moto;
   Sonar sonar;
   Servo servo;
+  IR ir;
 
   /*
-
 |---------------------|
 |     3    |     2    |
 |          |          |
@@ -26,11 +27,11 @@ public:
 |          4	      |
 |--------   -------   |
 |     0	    |	1     |		
-|	    |         |
+|			|         |
 |---------------------|
   */
 
-  Map(Scan &sc, Moto &mot, Sonar &son, Servo &serv) {
+  Map(Scan &sc, Moto &mot, Sonar &son, Servo &serv, IR &infra) {
     baseSeen=false;
     baseRoomNumber=0;
     currentRoom=0;
@@ -39,6 +40,7 @@ public:
     moto=mot;
     sonar=son;
     servo=&serv;
+	ir=&infra;
 
   }
 
@@ -50,7 +52,7 @@ public:
     startingRoom=startRoom;
   }
 
-  //moves through a door after scan has told it which quadrant the door is in
+  //moves through a door after scan has told it which quadrant the door is in (N-E, 1 for N-W, 2 for S-E, 3 for S-W, 4 for direct north, 5 for direct south, 6 for direct east, 7 for direct west)
   void moveThroughDoor() {
     if(scan.nearestAnomaly() == 0) { //door in N-E
       while(sonar.state()==0) {
